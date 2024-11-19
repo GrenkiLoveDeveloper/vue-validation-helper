@@ -58,13 +58,14 @@ const validateField = (
 /**
  * Хук для работы с полем формы
  *
- * @param field
+ * @param field IField
+ * @returns FieldState
  */
 export const useField = (field: IField): FieldState => {
   const valid = ref(true);
   const value = ref(field.value);
   const touched = ref(false);
-  let errors = reactive<FieldErrors>({});
+  const errors = reactive<FieldErrors>({});
 
   // Проверка поля
   const reassign = (val: unknown): void => {

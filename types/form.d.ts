@@ -24,7 +24,7 @@ type FieldState = {
   blur: () => void; // функция для установки флага touched
 };
 
-// Тип возвращаемого значения useForm хука , состояние формы и геттер валидности формы (свойство valid)
+/** Тип возвращаемого значения useForm хука , состояние формы и геттер валидности формы (свойство valid)*/
 type FormFieldState = {
   [key: string]: FieldState | ComputedGetter;
 };
