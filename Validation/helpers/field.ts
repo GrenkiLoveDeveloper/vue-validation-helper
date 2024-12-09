@@ -1,23 +1,18 @@
-import { ref, reactive, watch } from "vue";
-import { IField, FieldErrors, FieldState } from "@/types/form";
-import { getErrorMessage } from "./rules";
+import { ref, reactive, watch } from 'vue';
+import { IField, FieldErrors, FieldState } from '@/modules/Validation/types/form';
+import { getErrorMessage } from './rules';
 
 const not = (val: boolean): boolean => !val;
 
 /**
- *  Обновление ошибки
+ * Обновление ошибки
  *
  * @param errors
  * @param name
  * @param isValid
  * @param errorMessage
  */
-const updateError = (
-  errors: FieldErrors,
-  name: string,
-  isValid: boolean,
-  errorMessage: string
-) => {
+const updateError = (errors: FieldErrors, name: string, isValid: boolean, errorMessage: string) => {
   errors[name] = {
     flag: not(isValid),
     message: errorMessage,
@@ -32,18 +27,13 @@ const updateError = (
  * @param errors
  * @param valid
  */
-const validateField = (
-  field: IField,
-  val: unknown,
-  errors: FieldErrors,
-  valid: { value: boolean }
-) => {
+const validateField = (field: IField, val: unknown, errors: FieldErrors, valid: { value: boolean }) => {
   valid.value = true;
-  errors.message = "";
-  Object.keys(field.validators ?? {}).forEach((name) => {
+  errors.message = '';
+  Object.keys(field.validators ?? {}).forEach(name => {
     if (field.validators) {
       const isValid = field.validators[name](val);
-      const errorMessage = not(isValid) ? getErrorMessage(name) : "";
+      const errorMessage = not(isValid) ? getErrorMessage(name) : '';
 
       updateError(errors, name, isValid, errorMessage);
 
@@ -58,7 +48,7 @@ const validateField = (
 /**
  * Хук для работы с полем формы
  *
- * @param field IField
+ * @param field
  * @returns FieldState
  */
 export const useField = (field: IField): FieldState => {

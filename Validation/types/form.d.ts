@@ -1,4 +1,4 @@
-import { ComputedGetter, ComputedRef, Ref } from "vue";
+import { ComputedGetter, Ref } from "vue";
 
 /** Интерфейс для поля формы (параметр для useField хука) */
 interface IField {
@@ -6,7 +6,7 @@ interface IField {
   validators?: Record<string, (val: unknown) => boolean>; // объект с валидаторами
 }
 
-/** Интерфейс для параметров useForm хука */
+/** Интерфейс для параметров useForm хука*/
 interface IUseFormParams {
   [key: string]: IField;
 }

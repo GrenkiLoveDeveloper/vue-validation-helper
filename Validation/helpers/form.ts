@@ -3,12 +3,20 @@
  *
  * Возаращает объект с полями формы и общее свойство valid, указывающее на валидность всей формы
  */
+import { computed, reactive } from "vue";
+import { useField } from "./field";
+import {
+  IUseFormParams,
+  FormFieldState,
+  FieldState,
+} from "@/modules/Validation/types/form";
 
-import { computed, reactive } from 'vue';
-import { useField } from './field';
-import { IUseFormParams, FormFieldState, FieldState } from '@/types/form';
-
-// Хук для работы с формой и полями
+/**
+ * Хук для работы с формой и полями
+ *
+ * @param init {IUseFormParams}
+ * @returns FormFieldState
+ */
 export const useForm = (init: IUseFormParams): FormFieldState => {
   const form = reactive<FormFieldState>({});
 
@@ -17,14 +25,19 @@ export const useForm = (init: IUseFormParams): FormFieldState => {
     form[key] = useField(value);
   }
 
-  //Функция для проверки наличия ключа valid
-  const withoutValid = (k: string): boolean => k !== 'valid';
+  /**
+   * Функция для проверки наличия ключа valid
+   *
+   * @param k {string}
+   * @returns boolean
+   */
+  const withoutValid = (k: string): boolean => k !== "valid";
 
   //Проверка на валидность формы (всех полей)
   form.valid = computed(() => {
     return !Object.keys(form)
       .filter(withoutValid)
-      .some(k => {
+      .some((k) => {
         return (form[k] as FieldState).valid === false;
       });
   });

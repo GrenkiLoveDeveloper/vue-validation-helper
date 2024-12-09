@@ -1,4 +1,4 @@
-import { FormFieldState } from '@/types/form';
+import { FormFieldState } from '@/modules/Validation/types/form';
 /**
  * Проверка валидности поля
  * @param form - объект с фильтрами
@@ -33,8 +33,10 @@ export const isEmpty = (value: any): boolean => {
         return false;
       }
       return Object.keys(value).length === 0;
+    case typeof value === 'number':
+      return false;
     default:
-      // Проверка на ложные значения, такие как false, 0, NaN и т.д.
+      // Проверка на ложные значения, такие как false, NaN и т.д.
       return !value;
   }
 };

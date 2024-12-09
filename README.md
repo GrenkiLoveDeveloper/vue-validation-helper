@@ -4,85 +4,77 @@ my custom validatation for vue
 
 # Vue Validation Helper
 
-Кастомный хелпер вполне может стать хорошей и гибкой библиотекой, моя альтернатива существующим библиотекам для валидации форм и фильтров
-
-на основе `Vue`. Включает набор методов и правил валидации для удобного управления состоянием форм и фильтрацией.
+Vue Validation Helper — это кастомное решение для валидации форм и фильтров на основе Vue 3. В отличие от существующих библиотек, это решение предлагает гибкость и простоту настройки. Поддерживает валидацию полей и форм, обработку ошибок и уведомлений, а также включает набор готовых правил валидации (например, required, email, minLength, а так же вы можете добавить свое любое правило)
 
 ## Установка
 
-Чтобы добавить в проект можно загрузить validationForm соттвественно в папку src/helpers и src/types для типов формы
+У вас должна быть установлена Pinia
+Установите Pinia, если ещё не установили:
+```
+npm install pinia
+```
+
+Я использую модульную архитектуру, если вы тоже можете сделать так:
+
 
 ```
 src/
-├── helpers/
-│   └── validationForm
-│
-└── types/
-    └── form.d.ts
+├── modules/
+│    └── Validation/
+│         ├── composables/
+│         │     └── useFilters.ts       // Логика проверки фильтров
+│         ├── helpers/
+│         │     ├── form.ts             // Хук для работы с формой
+│         │     ├── rules.ts            // Готовые правила валидации
+│         │     └── utilsForm.ts        // Утилиты для работы с формами
+│         ├── types/
+│         │     └── form.ts             // Типы для формы и полей
+
 ```
+
+Или раскидать по папкам composables, helpers, types соотвественно
 
 ## Прменение
 
-Например можно создать store (Pinia) и сделать так:
+Пример подключения всех модулей в одном компоненте
+
+Вы можете подключить все необходимые функции одним блоком.
+Пример удобного подключения модулей:
 
 ```
-import { defineStore } from 'pinia';
+/** Валидация */
+import { FormFieldState } from '@/modules/Validation/types/form';
+import { useForm } from '@/modules/Validation/helpers/form';
+import { useRules } from '@/modules/Validation/helpers/rules';
+import { formToArray } from '@/modules/Validation/helpers/utilsForm';
+import { useFilters } from '@/modules/Validation/composables/useFilters';
 
-//**helpers */
-import { useForm } from '@/helpers/validationForm/form';
-import { useRules } from '@/helpers/validationForm/rules';
-import { checkFieldValidate, formToArray } from '@/helpers/validationForm/utilsForm';
+const { transformValidFilters, checkFiltersValid } = useFilters();
+const { required, isNoEmptyHtml } = useRules();
+```
 
-//**types */
-import { FormFieldState, FormLabel } from '@/types/form';
-
-// Получение правил валидации
-const { minLength, email, maxLength, required } = useRules();
-
-export const useUserFormStore = defineStore('userForm', () => {
-  const form = useForm({
-    username: { value: '', validators: { required } },
-    email: { value: '', validators: { email, maxLength: maxLength(50) } },
-    password: { value: '', validators: { minLength: minLength(5), required } },
-  });
-
-  /**
-   * Проверка валидности поля
-   * @param fieldName - имя поля
-   */
-  const isFieldValid = (fieldName: string) => {
-    return checkFieldValidate(form, fieldName);
-  };
-
-  return {
-    form,
-    isFieldValid,
-    formToArray,
-  };
+```
+/** Создаём форму */
+const form = useForm({
+  name: {
+    value: '',
+    validators: {
+      required,
+      minLength: minLength(4)
+    }
+  },
+  email: {
+    value: '',
+    validators: {
+      required,
+      email: true
+    }
+  },
+  description: {
+    value: '',
+    validators: {
+      isNoEmptyHtml
+    }
+  }
 });
-
-```
-
-После настройки Pinia-хранилища можно использовать компонент, например, DefaultField, для работы с валидацией конкретного поля
-
-```
-<template>
-  <DefaultField
-    v-model="form.email.value"
-    :label="labels.email"
-    :type="'email'"
-    :valid="isFieldValid('email')"
-    @blur="form.email.blur()"
-  />
-</template>
-
-<script setup>
-import { useUserFormStore } from '@/stores/userForm';
-
-const { form, isFieldValid } = useUserFormStore();
-
-const labels = {
-  email: 'Электронная почта',
-};
-</script>
 ```
